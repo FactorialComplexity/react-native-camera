@@ -293,7 +293,10 @@ public class RNCameraView extends CameraView implements LifecycleEventListener, 
             audioSource = options.getInt("audioSource");
           }
 
-
+          if (options.hasKey("audioChannel")) {
+            profile.audioChannels = options.getInt("audioChannel");
+          }
+          
           boolean recordAudio = true;
           if (options.hasKey("mute")) {
             recordAudio = !options.getBoolean("mute");

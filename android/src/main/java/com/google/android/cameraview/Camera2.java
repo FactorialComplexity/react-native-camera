@@ -562,7 +562,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     }
 
     @Override
-    boolean record(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile, int orientation, int audioSource) {
+    boolean record(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile, int orientation, Integer audioSource) {
         if (!mIsRecording) {
             setUpMediaRecorder(path, maxDuration, maxFileSize, recordAudio, profile, audioSource);
             try {
@@ -1353,7 +1353,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
 
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         if (recordAudio) {
-            if (audioSource == null) {
+            if (audioSource != null) {
                 mMediaRecorder.setAudioSource(audioSource);
             } else {
                 mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);

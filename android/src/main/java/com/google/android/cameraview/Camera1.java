@@ -801,7 +801,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
     }
 
     @Override
-    boolean record(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile, int orientation) {
+    boolean record(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile, int orientation, Integer audioSource) {
 
         // make sure compareAndSet is last because we are setting it
         if (!isPictureCaptureInProgress.get() && mIsRecording.compareAndSet(false, true)) {
@@ -809,7 +809,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
                 mOrientation = orientation;
             }
             try {
-                setUpMediaRecorder(path, maxDuration, maxFileSize, recordAudio, profile);
+                setUpMediaRecorder(path, maxDuration, maxFileSize, recordAudio, profile, audioSource);
                 mMediaRecorder.prepare();
                 mMediaRecorder.start();
 
@@ -1497,7 +1497,7 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
         mCallback.onFramePreview(data, previewSize.width, previewSize.height, mDeviceOrientation);
     }
 
-    private void setUpMediaRecorder(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile) {
+    private void setUpMediaRecorder(String path, int maxDuration, int maxFileSize, boolean recordAudio, CamcorderProfile profile, Integer audioSource) {
 
         mMediaRecorder = new MediaRecorder();
         mCamera.unlock();
@@ -1506,7 +1506,11 @@ class Camera1 extends CameraViewImpl implements MediaRecorder.OnInfoListener,
 
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
         if (recordAudio) {
-            mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+            if (audioSource != null) {
+                mMediaRecorder.setAudioSource(audioSource);
+            } else {
+                mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+            }
         }
 
         mMediaRecorder.setOutputFile(path);

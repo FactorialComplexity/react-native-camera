@@ -619,12 +619,13 @@ public class CameraView extends FrameLayout {
      * @param maxDuration Maximum duration of the recording, in seconds.
      * @param maxFileSize Maximum recording file size, in bytes.
      * @param profile Quality profile of the recording.
-     *
-     * fires {@link Callback#onRecordingStart(CameraView, String, int, int)} and {@link Callback#onRecordingEnd(CameraView)}.
+*
+* fires {@link Callback#onRecordingStart(CameraView, String, int, int)} and {@link Callback#onRecordingEnd(CameraView)}.
+     * @param audioSource
      */
     public boolean record(String path, int maxDuration, int maxFileSize,
-                          boolean recordAudio, CamcorderProfile profile, int orientation) {
-        return mImpl.record(path, maxDuration, maxFileSize, recordAudio, profile, orientation);
+                          boolean recordAudio, CamcorderProfile profile, int orientation, Integer audioSource) {
+        return mImpl.record(path, maxDuration, maxFileSize, recordAudio, profile, orientation, audioSource);
     }
 
     public void stopRecording() {

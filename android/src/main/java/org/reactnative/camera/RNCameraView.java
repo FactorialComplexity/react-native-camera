@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
 import android.os.Build;
 import androidx.core.content.ContextCompat;
 import android.view.View;
@@ -286,6 +287,16 @@ public class RNCameraView extends CameraView implements LifecycleEventListener, 
             profile.videoBitRate = options.getInt("videoBitrate");
           }
 
+
+          Integer audioSource = null;
+          if (options.hasKey("audioSource")) {
+            audioSource = options.getInt("audioSource");
+          }
+
+          if (options.hasKey("audioChannel")) {
+            profile.audioChannels = options.getInt("audioChannel");
+          }
+          
           boolean recordAudio = true;
           if (options.hasKey("mute")) {
             recordAudio = !options.getBoolean("mute");
@@ -296,7 +307,7 @@ public class RNCameraView extends CameraView implements LifecycleEventListener, 
             orientation = options.getInt("orientation");
           }
 
-          if (RNCameraView.super.record(path, maxDuration * 1000, maxFileSize, recordAudio, profile, orientation)) {
+          if (RNCameraView.super.record(path, maxDuration * 1000, maxFileSize, recordAudio, profile, orientation, audioSource)) {
             mIsRecording = true;
             mVideoRecordedPromise = promise;
           } else {

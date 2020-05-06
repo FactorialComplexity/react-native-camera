@@ -8,6 +8,8 @@
 #import <React/UIView+React.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import  "RNSensorOrientationChecker.h"
+#import "FYVoiceProcessingUnit.h"
+
 @interface RNCamera ()
 
 @property (nonatomic, weak) RCTBridge *bridge;
@@ -1058,12 +1060,17 @@ BOOL _sessionInterrupted = NO;
 
     BOOL recordAudio = [options valueForKey:@"mute"] == nil || ([options valueForKey:@"mute"] != nil && ![options[@"mute"] boolValue]);
 
+    [FYVoiceProcessingUnit stop];
     // sound recording connection, we can easily turn it on/off without manipulating inputs, this prevents flickering.
     // note that mute will also be set to true
     // if captureAudio is set to false on the JS side.
     // Check the property anyways just in case it is manipulated
     // with setNativeProps
     if(recordAudio && self.captureAudio){
+    
+        if ([options[@"audioSource"] isEqualToNumber:@(7)]) {
+            [FYVoiceProcessingUnit start];
+        }
 
         // if we haven't initialized our capture session yet
         // initialize it. This will cause video to flicker.

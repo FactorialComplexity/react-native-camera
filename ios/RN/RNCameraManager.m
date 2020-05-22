@@ -304,7 +304,15 @@ RCT_CUSTOM_VIEW_PROPERTY(textRecognizerEnabled, BOOL, RNCamera)
 
 RCT_CUSTOM_VIEW_PROPERTY(captureAudio, BOOL, RNCamera)
 {
-    [view setCaptureAudio:[RCTConvert BOOL:json]];
+    BOOL captureAudio = NO;
+    if ([@"voiceProcessingUnit_iOS" isEqualToString:json]) {
+        captureAudio = YES;
+        [view setVoiceProcessingUnitIOS:YES];
+    } else {
+        captureAudio = [RCTConvert BOOL:json];
+    }
+    
+    [view setCaptureAudio:captureAudio];
     [view updateCaptureAudio];
 }
 

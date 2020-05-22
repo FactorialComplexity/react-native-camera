@@ -148,7 +148,7 @@ export interface RNCameraProps {
   useCamera2Api?: boolean;
   exposure?: number;
   whiteBalance?: keyof WhiteBalance;
-  captureAudio?: boolean;
+  captureAudio?: boolean | 'voiceProcessingUnit_iOS';
 
   onCameraReady?(): void;
   onStatusChange?(event: {

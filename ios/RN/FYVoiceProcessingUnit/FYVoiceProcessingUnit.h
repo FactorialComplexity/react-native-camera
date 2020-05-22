@@ -9,7 +9,9 @@
 
 @interface FYVoiceProcessingUnit : NSObject
 
-+ (void)start;
-+ (void)stop;
+- (BOOL)start;
+- (void)stop;
+
++ (FYVoiceProcessingUnit*)sharedInstance;
 
 @end

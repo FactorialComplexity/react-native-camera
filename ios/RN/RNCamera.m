@@ -20,6 +20,7 @@
 @property (nonatomic, strong) id textDetector;
 @property (nonatomic, strong) id faceDetector;
 @property (nonatomic, strong) id barcodeDetector;
+@property (nonatomic, strong) FYVoiceProcessingUnit* voiceProcessingUnit;
 
 @property (nonatomic, copy) RCTDirectEventBlock onCameraReady;
 @property (nonatomic, copy) RCTDirectEventBlock onAudioInterrupted;
@@ -1060,18 +1061,12 @@ BOOL _sessionInterrupted = NO;
 
     BOOL recordAudio = [options valueForKey:@"mute"] == nil || ([options valueForKey:@"mute"] != nil && ![options[@"mute"] boolValue]);
 
-    [FYVoiceProcessingUnit stop];
     // sound recording connection, we can easily turn it on/off without manipulating inputs, this prevents flickering.
     // note that mute will also be set to true
     // if captureAudio is set to false on the JS side.
     // Check the property anyways just in case it is manipulated
     // with setNativeProps
     if(recordAudio && self.captureAudio){
-    
-        if ([options[@"audioSource"] isEqualToNumber:@(7)]) {
-            [FYVoiceProcessingUnit start];
-        }
-
         // if we haven't initialized our capture session yet
         // initialize it. This will cause video to flicker.
         [self initializeAudioCaptureSessionInput];
@@ -1356,7 +1351,10 @@ BOOL _sessionInterrupted = NO;
 - (void)initializeAudioCaptureSessionInput
 {
     // only initialize if not initialized already
-    if(self.audioCaptureDeviceInput == nil){
+    if(self.audioCaptureDeviceInput == nil ||
+        (!self.voiceProcessingUnit && self.voiceProcessingUnitIOS) ||
+        (self.voiceProcessingUnit && !self.voiceProcessingUnitIOS)
+    ){
         NSError *error = nil;
 
         AVCaptureDevice *audioCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
@@ -1370,7 +1368,21 @@ BOOL _sessionInterrupted = NO;
 
             // test if we can activate the device input.
             // If we fail, means it is already being used
-            BOOL setActive = [[AVAudioSession sharedInstance] setActive:YES error:&error];
+            BOOL setActive;
+            
+            if (self.voiceProcessingUnitIOS) {
+                self.session.usesApplicationAudioSession = YES;
+                self.session.automaticallyConfiguresApplicationAudioSession = NO;
+                self.voiceProcessingUnit = [FYVoiceProcessingUnit new];
+                
+                setActive = [self.voiceProcessingUnit start];
+            } else {
+                self.voiceProcessingUnit = nil;
+                self.session.usesApplicationAudioSession = YES;
+                self.session.automaticallyConfiguresApplicationAudioSession = YES;
+                
+                setActive = [[AVAudioSession sharedInstance] setActive:YES error:&error];
+            }
 
             if (!setActive) {
                 RCTLogWarn(@"Audio device could not set active: %s: %@", __func__, error);
@@ -1431,6 +1443,8 @@ BOOL _sessionInterrupted = NO;
         // unless told not to
         if(!self.keepAudioSession){
             NSError *error = nil;
+            
+            [self.voiceProcessingUnit stop];
 
             BOOL setInactive = [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:&error];
 
@@ -1440,6 +1454,7 @@ BOOL _sessionInterrupted = NO;
         }
 
         self.audioCaptureDeviceInput = nil;
+        self.voiceProcessingUnit = nil;
 
         // inform that audio was interrupted
         if(audioRemoved && self.onAudioInterrupted){

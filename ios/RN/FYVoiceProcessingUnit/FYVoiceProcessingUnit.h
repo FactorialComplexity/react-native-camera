@@ -9,6 +9,9 @@
 
 @interface FYVoiceProcessingUnit : NSObject
 
+@property (readonly) NSString* outputAudioFilePath;
+@property (readwrite) BOOL isRecording;
+
 - (BOOL)start;
 - (void)stop;
 

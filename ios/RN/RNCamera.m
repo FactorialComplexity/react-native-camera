@@ -9,6 +9,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import  "RNSensorOrientationChecker.h"
 #import "FYVoiceProcessingUnit.h"
+#import "FYAudioMerger.h"
 
 @interface RNCamera ()
 
@@ -1070,6 +1071,8 @@ BOOL _sessionInterrupted = NO;
         // if we haven't initialized our capture session yet
         // initialize it. This will cause video to flicker.
         [self initializeAudioCaptureSessionInput];
+        
+        self.voiceProcessingUnit.isRecording = YES;
 
 
         // finally, make sure we got access to the capture device
@@ -1077,6 +1080,7 @@ BOOL _sessionInterrupted = NO;
         if(self.audioCaptureDeviceInput != nil){
             AVCaptureConnection *audioConnection = [self.movieFileOutput connectionWithMediaType:AVMediaTypeAudio];
             audioConnection.enabled = YES;
+            NSLog(@"audioConnection: %@", audioConnection);
         }
 
     }
@@ -1389,6 +1393,9 @@ BOOL _sessionInterrupted = NO;
             }
 
             else if ([self.session canAddInput:audioDeviceInput]) {
+                audioCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
+                audioDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:audioCaptureDevice error:&error];
+
                 [self.session addInput:audioDeviceInput];
                 self.audioCaptureDeviceInput = audioDeviceInput;
 
@@ -1879,30 +1886,56 @@ BOOL _sessionInterrupted = NO;
         void (^resolveBlock)(void) = ^() {
             self.videoRecordedResolve(result);
         };
-
+        
         result[@"uri"] = outputFileURL.absoluteString;
         result[@"videoOrientation"] = @([self.orientation integerValue]);
         result[@"deviceOrientation"] = @([self.deviceOrientation integerValue]);
         result[@"isRecordingInterrupted"] = @(self.isRecordingInterrupted);
 
-
-        if (@available(iOS 10, *)) {
-            AVVideoCodecType videoCodec = self.videoCodecType;
-            if (videoCodec == nil) {
-                videoCodec = [self.movieFileOutput.availableVideoCodecTypes firstObject];
-            }
-            result[@"codec"] = videoCodec;
-
-            if ([connections[0] isVideoMirrored]) {
-                [self mirrorVideo:outputFileURL completion:^(NSURL *mirroredURL) {
-                    result[@"uri"] = mirroredURL.absoluteString;
-                    resolveBlock();
+        if (self.voiceProcessingUnit) {
+            self.voiceProcessingUnit.isRecording = NO;
+            NSString* outputVideoFilePath = [NSTemporaryDirectory()
+                stringByAppendingPathComponent:[NSString
+                    stringWithFormat:@"%@.mp4", @([[[NSDate alloc] init] timeIntervalSince1970])
+                ]];
+            [FYAudioMerger
+                mergeVideoFileAtURL:outputFileURL
+                withAudioFileAtPath:self.voiceProcessingUnit.outputAudioFilePath
+                toVideoFileAtPath:outputVideoFilePath
+                completion:^(NSError *error) {
+                    NSError* fsError;
+                    if (!error) {
+                        [[NSFileManager defaultManager] removeItemAtURL:outputFileURL error:&fsError];
+                        result[@"uri"] = [NSURL fileURLWithPath:outputVideoFilePath].absoluteString;
+                        resolveBlock();
+                    } else {
+                        NSLog(@"[ERROR] Failed to merge audio: %@", error);
+                        resolveBlock();
+                    }
+                    
+                    [[NSFileManager defaultManager] removeItemAtPath:self.voiceProcessingUnit.outputAudioFilePath error:&fsError];
+                    [self cleanupCamera];
                 }];
-                return;
-            }
-        }
+            return;
+        } else {
+            if (@available(iOS 10, *)) {
+                AVVideoCodecType videoCodec = self.videoCodecType;
+                if (videoCodec == nil) {
+                    videoCodec = [self.movieFileOutput.availableVideoCodecTypes firstObject];
+                }
+                result[@"codec"] = videoCodec;
 
-        resolveBlock();
+                if ([connections[0] isVideoMirrored]) {
+                    [self mirrorVideo:outputFileURL completion:^(NSURL *mirroredURL) {
+                        result[@"uri"] = mirroredURL.absoluteString;
+                        resolveBlock();
+                    }];
+                    return;
+                }
+            }
+
+            resolveBlock();
+        }
     } else if (self.videoRecordedReject != nil) {
         self.videoRecordedReject(@"E_RECORDING_FAILED", @"An error occurred while recording a video.", error);
     }

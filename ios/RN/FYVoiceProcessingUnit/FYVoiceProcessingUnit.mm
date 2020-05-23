@@ -11,9 +11,51 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <React/RCTLog.h>
 
+#include "AUOutputBL.h"
+
 @implementation FYVoiceProcessingUnit {
     AudioUnit _voiceUnit;
-    AudioStreamBasicDescription _format;
+    AUOutputBL* _inputBL;
+    ExtAudioFileRef _extAudioFile;
+    BOOL _isRecording;
+}
+
+static OSStatus ProcessVoiceAndWriteToFile(
+    void* inRefCon,
+    AudioUnitRenderActionFlags* ioActionFlags,
+    const AudioTimeStamp* inTimeStamp,
+    UInt32 inBusNumber,
+    UInt32 inNumberFrames,
+    AudioBufferList* ioData)
+{
+	FYVoiceProcessingUnit* self = (__bridge FYVoiceProcessingUnit*)inRefCon;
+	
+    self->_inputBL->Prepare(inNumberFrames);
+        
+    OSStatus err = AudioUnitRender(
+        self->_voiceUnit,
+        ioActionFlags,
+        inTimeStamp,
+        inBusNumber,
+        inNumberFrames,
+        self->_inputBL->ABL()
+    );
+    if (err != noErr) {
+        RCTLogWarn(@"inputProc: error %d", err);
+        return err;
+    }
+    
+    if (self->_isRecording) {
+        err = ExtAudioFileWriteAsync(self->_extAudioFile, inNumberFrames, self->_inputBL->ABL());
+        if (err != noErr) {
+            RCTLogWarn(@"ExtAudioFileWriteAsync: error %d", err);
+            return err;
+        }
+    }
+	
+    NSLog(@"ProcessVoiceAndWriteToFile: %d, %d", inBusNumber, inNumberFrames);
+ 
+	return noErr;
 }
 
 - (void)dealloc {
@@ -28,37 +70,32 @@ static FYVoiceProcessingUnit* g_FYVoiceProcessingUnit = nil;
     return g_FYVoiceProcessingUnit;
 }
 
-- (id)init {
-    if (self = [super init]) {
-        _format.mSampleRate = 8000;
-        _format.mFormatID = kAudioFormatLinearPCM;
-        _format.mFormatFlags = 12;
-        _format.mBytesPerPacket = 2;
-        _format.mFramesPerPacket = 1;
-        _format.mBytesPerFrame = 2;
-        _format.mChannelsPerFrame = 1;
-        _format.mBitsPerChannel = 16;
-        _format.mReserved = 0;
-    }
-    return self;
-}
-
 - (BOOL)start {
     [self stop];
 
-    AVAudioSession *session = [AVAudioSession sharedInstance];
+    CAStreamBasicDescription format(
+        44100,
+        1,
+        CAStreamBasicDescription::kPCMFormatInt16,
+        true
+    );
+    _inputBL = new AUOutputBL(format, 1024);
+
+        AVAudioSession *session = [AVAudioSession sharedInstance];
     NSError *error = nil;
     
     if (![session
         setCategory:AVAudioSessionCategoryPlayAndRecord
         mode:AVAudioSessionModeVideoChat
-        options:AVAudioSessionCategoryOptionMixWithOthers|AVAudioSessionCategoryOptionDefaultToSpeaker|AVAudioSessionCategoryOptionAllowBluetooth
+        options:AVAudioSessionCategoryOptionMixWithOthers
+            | AVAudioSessionCategoryOptionDefaultToSpeaker
+            | AVAudioSessionCategoryOptionAllowBluetooth
         error:&error
     ]) {
         RCTLogWarn(@"Error setting session category: %@", error);
     }
     
-    [session setPreferredSampleRate:_format.mSampleRate error:&error];
+    [session setPreferredSampleRate:format.mSampleRate error:&error];
     
     if (![session setActive:YES error:&error]) {
         RCTLogWarn(@"[ERROR] AVAudioSession setActive failed");
@@ -98,7 +135,7 @@ static FYVoiceProcessingUnit* g_FYVoiceProcessingUnit = nil;
     }
     
     UInt32 turnOn = 1;
-//    UInt32 turnOff = 0;
+    UInt32 turnOff = 0;
 //    err = AudioUnitSetProperty(
 //        _voiceUnit,
 //        kAUVoiceIOProperty_BypassVoiceProcessing,
@@ -113,8 +150,8 @@ static FYVoiceProcessingUnit* g_FYVoiceProcessingUnit = nil;
         kAUVoiceIOProperty_VoiceProcessingEnableAGC,
         kAudioUnitScope_Global,
         0,
-        &turnOn,
-        sizeof(turnOn)
+        &turnOff,
+        sizeof(turnOff)
     );
 
     err = AudioUnitSetProperty(
@@ -140,8 +177,8 @@ static FYVoiceProcessingUnit* g_FYVoiceProcessingUnit = nil;
         kAudioUnitProperty_StreamFormat,
         kAudioUnitScope_Input,
         0,
-        &_format,
-        sizeof(_format)
+        &format,
+        sizeof(format)
     );
 
     err = AudioUnitSetProperty(
@@ -149,13 +186,66 @@ static FYVoiceProcessingUnit* g_FYVoiceProcessingUnit = nil;
         kAudioUnitProperty_StreamFormat,
         kAudioUnitScope_Output,
         1,
-        &_format,
-        sizeof(_format)
+        &format,
+        sizeof(format)
+    );
+    
+    AURenderCallbackStruct renderCallbackStruct;
+    renderCallbackStruct.inputProc = ProcessVoiceAndWriteToFile;
+    renderCallbackStruct.inputProcRefCon = (__bridge void*)self;
+    err = AudioUnitSetProperty(
+        _voiceUnit,
+        kAudioOutputUnitProperty_SetInputCallback,
+        kAudioUnitScope_Global,
+        1,
+        &renderCallbackStruct,
+        sizeof(renderCallbackStruct)
     );
     
     err = AudioUnitInitialize(_voiceUnit);
     if (err != noErr) {
         RCTLogWarn(@"[ERROR] Unable to initialize voice processing AudioUnit");
+        return NO;
+    }
+    
+    _outputAudioFilePath = [NSTemporaryDirectory()
+        stringByAppendingPathComponent:[NSString
+            stringWithFormat:@"%@.caf", @([[[NSDate alloc] init] timeIntervalSince1970])
+        ]
+    ];
+    CFURLRef outputFile = CFURLCreateWithFileSystemPath(
+        kCFAllocatorDefault,
+        (CFStringRef)_outputAudioFilePath,
+        kCFURLPOSIXPathStyle,
+        false
+    );
+    
+    AVAudioFormat* fileFormat = [[AVAudioFormat alloc]
+        initWithCommonFormat:AVAudioPCMFormatInt16
+        sampleRate:format.mSampleRate
+        channels:AVAudioChannelCount(format.NumberChannels())
+        interleaved:YES
+    ];
+    err = ExtAudioFileCreateWithURL(
+        outputFile,
+        kAudioFileCAFType,
+        fileFormat.streamDescription,
+        NULL,
+        kAudioFileFlags_EraseFile,
+        &_extAudioFile
+    );
+    
+    if (err == noErr) {
+        err = ExtAudioFileSetProperty(
+            _extAudioFile,
+            kExtAudioFileProperty_ClientDataFormat,
+            sizeof(format),
+            &format
+        );
+    }
+    
+    if (err != noErr) {
+        RCTLogWarn(@"[ERROR] Unable to create output file");
         return NO;
     }
     
@@ -165,16 +255,27 @@ static FYVoiceProcessingUnit* g_FYVoiceProcessingUnit = nil;
         return NO;
     }
     
-    NSLog(@"FYVoiceProcessingUnit STARTED");
     return YES;
 }
 
 - (void)stop {
+    if (_extAudioFile) {
+        ExtAudioFileDispose(_extAudioFile);
+        _extAudioFile = NULL;
+    }
+    
     if (_voiceUnit) {
         AudioOutputUnitStop(_voiceUnit);
         AudioUnitUninitialize(_voiceUnit);
         _voiceUnit = NULL;
     }
+    
+    if (_inputBL) {
+        delete _inputBL;
+        _inputBL = NULL;
+    }
+    
+    _isRecording = NO;
 }
 
 @end

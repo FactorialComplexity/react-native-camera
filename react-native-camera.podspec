@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "RN" do |ss|
-    ss.source_files = "ios/RN/**/*.{h,m,mm}"
+    ss.source_files = "ios/RN/**/*.{h,m,mm,cpp}"
   end
 
   s.subspec "TextDetector" do |ss|

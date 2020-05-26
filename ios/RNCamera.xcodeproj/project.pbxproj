@@ -10,6 +10,14 @@
 		0314E39D1B661A460092D183 /* CameraFocusSquare.m in Sources */ = {isa = PBXBuildFile; fileRef = 0314E39C1B661A460092D183 /* CameraFocusSquare.m */; };
 		2647D6712256BBD5007D2F91 /* FaceDetectorManagerMlkit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2647D6702256BBD5007D2F91 /* FaceDetectorManagerMlkit.m */; };
 		2647D6742256BBE8007D2F91 /* RNFaceDetectorModuleMLKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2647D6722256BBE8007D2F91 /* RNFaceDetectorModuleMLKit.m */; };
+		2EC11A8E247D17E100D11574 /* FYVoiceProcessingUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EC11A79247D17E100D11574 /* FYVoiceProcessingUnit.m */; };
+		2EC11A8F247D17E100D11574 /* FYAudioMerger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EC11A7B247D17E100D11574 /* FYAudioMerger.m */; };
+		2EC11A90247D17E100D11574 /* FYVoiceProcessingUnit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2EC11A7C247D17E100D11574 /* FYVoiceProcessingUnit.mm */; };
+		2EC11A91247D17E100D11574 /* CAComponentDescription.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EC11A82247D17E100D11574 /* CAComponentDescription.cpp */; };
+		2EC11A92247D17E100D11574 /* AUOutputBL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EC11A85247D17E100D11574 /* AUOutputBL.cpp */; };
+		2EC11A93247D17E100D11574 /* CADebugPrintf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EC11A89247D17E100D11574 /* CADebugPrintf.cpp */; };
+		2EC11A94247D17E100D11574 /* CAStreamBasicDescription.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EC11A8A247D17E100D11574 /* CAStreamBasicDescription.cpp */; };
+		2EC11A95247D17E100D11574 /* CAAudioBufferList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2EC11A8B247D17E100D11574 /* CAAudioBufferList.cpp */; };
 		4107014D1ACB732B00C6AA39 /* RCTCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 410701481ACB732B00C6AA39 /* RCTCamera.m */; };
 		4107014E1ACB732B00C6AA39 /* RCTCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4107014A1ACB732B00C6AA39 /* RCTCameraManager.m */; };
 		454EBCF41B5082DC00AD0F86 /* NSMutableDictionary+ImageMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 454EBCF31B5082DC00AD0F86 /* NSMutableDictionary+ImageMetadata.m */; };
@@ -41,6 +49,26 @@
 		2647D6702256BBD5007D2F91 /* FaceDetectorManagerMlkit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceDetectorManagerMlkit.m; sourceTree = "<group>"; };
 		2647D6722256BBE8007D2F91 /* RNFaceDetectorModuleMLKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNFaceDetectorModuleMLKit.m; sourceTree = "<group>"; };
 		2647D6732256BBE8007D2F91 /* RNFaceDetectorModuleMLKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNFaceDetectorModuleMLKit.h; sourceTree = "<group>"; };
+		2EC11A79247D17E100D11574 /* FYVoiceProcessingUnit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FYVoiceProcessingUnit.m; sourceTree = "<group>"; };
+		2EC11A7A247D17E100D11574 /* FYAudioMerger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FYAudioMerger.h; sourceTree = "<group>"; };
+		2EC11A7B247D17E100D11574 /* FYAudioMerger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FYAudioMerger.m; sourceTree = "<group>"; };
+		2EC11A7C247D17E100D11574 /* FYVoiceProcessingUnit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FYVoiceProcessingUnit.mm; sourceTree = "<group>"; };
+		2EC11A7E247D17E100D11574 /* CADebugger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CADebugger.h; sourceTree = "<group>"; };
+		2EC11A7F247D17E100D11574 /* CAStreamBasicDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAStreamBasicDescription.h; sourceTree = "<group>"; };
+		2EC11A80247D17E100D11574 /* CAAudioBufferList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAAudioBufferList.h; sourceTree = "<group>"; };
+		2EC11A81247D17E100D11574 /* CACFDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CACFDictionary.h; sourceTree = "<group>"; };
+		2EC11A82247D17E100D11574 /* CAComponentDescription.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAComponentDescription.cpp; sourceTree = "<group>"; };
+		2EC11A83247D17E100D11574 /* CADebugPrintf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CADebugPrintf.h; sourceTree = "<group>"; };
+		2EC11A84247D17E100D11574 /* CALogMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CALogMacros.h; sourceTree = "<group>"; };
+		2EC11A85247D17E100D11574 /* AUOutputBL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AUOutputBL.cpp; sourceTree = "<group>"; };
+		2EC11A86247D17E100D11574 /* CAComponentDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAComponentDescription.h; sourceTree = "<group>"; };
+		2EC11A87247D17E100D11574 /* CADebugMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CADebugMacros.h; sourceTree = "<group>"; };
+		2EC11A88247D17E100D11574 /* AUOutputBL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AUOutputBL.h; sourceTree = "<group>"; };
+		2EC11A89247D17E100D11574 /* CADebugPrintf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CADebugPrintf.cpp; sourceTree = "<group>"; };
+		2EC11A8A247D17E100D11574 /* CAStreamBasicDescription.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAStreamBasicDescription.cpp; sourceTree = "<group>"; };
+		2EC11A8B247D17E100D11574 /* CAAudioBufferList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CAAudioBufferList.cpp; sourceTree = "<group>"; };
+		2EC11A8C247D17E100D11574 /* CAMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CAMath.h; sourceTree = "<group>"; };
+		2EC11A8D247D17E100D11574 /* FYVoiceProcessingUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FYVoiceProcessingUnit.h; sourceTree = "<group>"; };
 		4107012F1ACB723B00C6AA39 /* libRNCamera.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNCamera.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		410701471ACB732B00C6AA39 /* RCTCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTCamera.h; sourceTree = "<group>"; };
 		410701481ACB732B00C6AA39 /* RCTCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTCamera.m; sourceTree = "<group>"; };
@@ -74,6 +102,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2EC11A78247D17E100D11574 /* FYVoiceProcessingUnit */ = {
+			isa = PBXGroup;
+			children = (
+				2EC11A79247D17E100D11574 /* FYVoiceProcessingUnit.m */,
+				2EC11A7A247D17E100D11574 /* FYAudioMerger.h */,
+				2EC11A7B247D17E100D11574 /* FYAudioMerger.m */,
+				2EC11A8D247D17E100D11574 /* FYVoiceProcessingUnit.h */,
+				2EC11A7C247D17E100D11574 /* FYVoiceProcessingUnit.mm */,
+				2EC11A7D247D17E100D11574 /* PublicUtility */,
+			);
+			path = FYVoiceProcessingUnit;
+			sourceTree = "<group>";
+		};
+		2EC11A7D247D17E100D11574 /* PublicUtility */ = {
+			isa = PBXGroup;
+			children = (
+				2EC11A7E247D17E100D11574 /* CADebugger.h */,
+				2EC11A7F247D17E100D11574 /* CAStreamBasicDescription.h */,
+				2EC11A80247D17E100D11574 /* CAAudioBufferList.h */,
+				2EC11A81247D17E100D11574 /* CACFDictionary.h */,
+				2EC11A82247D17E100D11574 /* CAComponentDescription.cpp */,
+				2EC11A83247D17E100D11574 /* CADebugPrintf.h */,
+				2EC11A84247D17E100D11574 /* CALogMacros.h */,
+				2EC11A85247D17E100D11574 /* AUOutputBL.cpp */,
+				2EC11A86247D17E100D11574 /* CAComponentDescription.h */,
+				2EC11A87247D17E100D11574 /* CADebugMacros.h */,
+				2EC11A88247D17E100D11574 /* AUOutputBL.h */,
+				2EC11A89247D17E100D11574 /* CADebugPrintf.cpp */,
+				2EC11A8A247D17E100D11574 /* CAStreamBasicDescription.cpp */,
+				2EC11A8B247D17E100D11574 /* CAAudioBufferList.cpp */,
+				2EC11A8C247D17E100D11574 /* CAMath.h */,
+			);
+			path = PublicUtility;
+			sourceTree = "<group>";
+		};
 		410701241ACB719800C6AA39 = {
 			isa = PBXGroup;
 			children = (
@@ -110,6 +173,7 @@
 		714166162013E1B600EE9FCC /* RN */ = {
 			isa = PBXGroup;
 			children = (
+				2EC11A78247D17E100D11574 /* FYVoiceProcessingUnit */,
 				F8393BEA21469C0000AB1995 /* RNSensorOrientationChecker.h */,
 				F8393BEB21469C0000AB1995 /* RNSensorOrientationChecker.m */,
 				2647D66F2256BBD5007D2F91 /* FaceDetectorManagerMlkit.h */,
@@ -186,8 +250,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2EC11A8F247D17E100D11574 /* FYAudioMerger.m in Sources */,
 				2647D6742256BBE8007D2F91 /* RNFaceDetectorModuleMLKit.m in Sources */,
+				2EC11A90247D17E100D11574 /* FYVoiceProcessingUnit.mm in Sources */,
 				0314E39D1B661A460092D183 /* CameraFocusSquare.m in Sources */,
+				2EC11A91247D17E100D11574 /* CAComponentDescription.cpp in Sources */,
 				454EBCF41B5082DC00AD0F86 /* NSMutableDictionary+ImageMetadata.m in Sources */,
 				71C7FFD62013C824006EB75A /* RNFileSystem.m in Sources */,
 				4107014E1ACB732B00C6AA39 /* RCTCameraManager.m in Sources */,
@@ -195,10 +262,15 @@
 				F8393BEC21469C0000AB1995 /* RNSensorOrientationChecker.m in Sources */,
 				71C7FFD02013C7E5006EB75A /* RNCameraUtils.m in Sources */,
 				7162BE682013EAA400FE51FF /* RNCameraManager.m in Sources */,
+				2EC11A95247D17E100D11574 /* CAAudioBufferList.cpp in Sources */,
+				2EC11A92247D17E100D11574 /* AUOutputBL.cpp in Sources */,
 				7162BE672013EAA100FE51FF /* RNCamera.m in Sources */,
 				9FE592B31CA3CBF500788287 /* RCTSensorOrientationChecker.m in Sources */,
 				2647D6712256BBD5007D2F91 /* FaceDetectorManagerMlkit.m in Sources */,
+				2EC11A93247D17E100D11574 /* CADebugPrintf.cpp in Sources */,
+				2EC11A8E247D17E100D11574 /* FYVoiceProcessingUnit.m in Sources */,
 				71C7FFD32013C817006EB75A /* RNImageUtils.m in Sources */,
+				2EC11A94247D17E100D11574 /* CAStreamBasicDescription.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

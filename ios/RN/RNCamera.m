@@ -1072,9 +1072,6 @@ BOOL _sessionInterrupted = NO;
         // initialize it. This will cause video to flicker.
         [self initializeAudioCaptureSessionInput];
         
-        self.voiceProcessingUnit.isRecording = YES;
-
-
         // finally, make sure we got access to the capture device
         // and turn the connection on.
         if(self.audioCaptureDeviceInput != nil){
@@ -1782,6 +1779,10 @@ BOOL _sessionInterrupted = NO;
 
     [_metadataOutput setMetadataObjectTypes:availableRequestedObjectTypes];
     [self updateRectOfInterest];
+}
+
+- (void)captureOutput:(AVCaptureFileOutput *)output didStartRecordingToOutputFileAtURL:(NSURL *)fileURL fromConnections:(NSArray<AVCaptureConnection *> *)connections {
+    self.voiceProcessingUnit.isRecording = YES;
 }
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects

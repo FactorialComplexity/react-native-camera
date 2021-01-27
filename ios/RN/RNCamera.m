@@ -1930,6 +1930,7 @@ BOOL _sessionInterrupted = NO;
                     [self mirrorVideo:outputFileURL completion:^(NSURL *mirroredURL) {
                         result[@"uri"] = mirroredURL.absoluteString;
                         resolveBlock();
+                        [self cleanupCamera];
                     }];
                     return;
                 }
